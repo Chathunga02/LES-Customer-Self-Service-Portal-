@@ -1,0 +1,6 @@
+{
+  "name": "LES Customer Self-Service Portal",
+  "description": "A standalone self-service portal for Customer Admins to manage subscriptions, seats, and billing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
