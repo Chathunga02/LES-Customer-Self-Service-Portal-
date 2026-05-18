@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { 
   CreditCard, 
   Download, 
-  Building, 
-  Search, 
-  Filter, 
-  FileText,
-  ExternalLink,
-  Info
+  ArrowRight
 } from 'lucide-react';
 import { 
   Table, 
@@ -17,184 +12,150 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
-  MOCK_BILLING, 
-  MOCK_INVOICES, 
-  MOCK_SUBSCRIPTION 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { 
+  MOCK_BILLING 
 } from '@/lib/mockData';
-import { format } from 'date-fns';
+import { useProduct } from '@/contexts/ProductContext';
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 
 const Billing = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const { activeProduct } = useProduct();
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const b = MOCK_BILLING;
 
-  const filteredInvoices = MOCK_INVOICES.filter(inv => 
-    inv.number.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleDownload = () => {
+    toast.success("Invoice downloaded");
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Invoices & Billing</h1>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[22px] font-bold text-[#111827]">{activeProduct.name} - Invoices & Billing</h1>
+          <p className="text-[#6B7280] text-[14px] mt-1">View and download your billing history for {activeProduct.name}.</p>
+        </div>
       </div>
 
-      {/* Renewal Invoice Access (Contextual for T-30) */}
-      <Card className="bg-brand-primary border-none shadow-sm text-white overflow-hidden">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 text-center md:text-left">
-              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                <FileText className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold">Your renewal invoice is ready.</h3>
-                <p className="text-white/80 text-sm">Next renewal: June 14, 2026 for $1,188.00</p>
-              </div>
+      {/* Payment Method Banner Card */}
+      <Card className="bg-white border border-slate-200 shadow-sm rounded-lg p-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-8 bg-slate-100 rounded border border-slate-200 flex items-center justify-center shrink-0">
+              <CreditCard className="w-5 h-5 text-slate-500" />
             </div>
-            <Button className="bg-white text-brand-primary hover:bg-white/90 font-bold px-6">
-              Download renewal invoice
-            </Button>
+            <p className="text-[16px] font-bold text-[#111827]">
+              Payment Method: {b.paymentMethod.brand} ending in {b.paymentMethod.last4}
+            </p>
           </div>
-        </CardContent>
+          <button 
+            onClick={() => setIsPaymentModalOpen(true)}
+            className="text-[14px] font-medium text-brand-primary hover:underline flex items-center gap-1 group whitespace-nowrap"
+          >
+            Update Payment Method <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+          </button>
+        </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Billing Contact */}
-        <Card className="border-none shadow-sm ring-1 ring-slate-200">
-          <CardHeader className="pb-3 border-b border-slate-50">
-            <CardTitle className="text-base font-semibold">Billing contact</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            <div>
-              <p className="text-sm font-bold text-slate-900">{b.contactName}</p>
-              <p className="text-sm text-slate-500 font-medium">{b.contactEmail}</p>
-            </div>
-            <Button variant="outline" className="text-brand-primary font-semibold border-slate-200 h-9">
-              Update billing contact
-            </Button>
-            <p className="text-[11px] text-slate-400 italic mt-2">
-              Billing emails and invoices are sent to this address.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Payment Method */}
-        <Card className="border-none shadow-sm ring-1 ring-slate-200">
-          <CardHeader className="pb-3 border-b border-slate-50">
-            <CardTitle className="text-base font-semibold">Payment method</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            {b.paymentMethod.type === 'CREDIT_CARD' ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-7 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-slate-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{b.paymentMethod.brand} ending ••••{b.paymentMethod.last4}</p>
-                    <p className="text-xs text-slate-500 font-medium">Expires {b.paymentMethod.expiry}</p>
-                  </div>
-                </div>
-                <Button variant="outline" className="text-slate-600 font-semibold border-slate-200 h-9">
-                  Update
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Building className="w-4 h-4 text-slate-500" />
-                  <span className="text-sm font-bold text-slate-900">Bank transfer</span>
-                </div>
-                <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Payment Reference</p>
-                  <p className="text-sm font-mono text-slate-700">PAY-ACME-INV2026-00045</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Invoice History */}
-      <Card className="border-none shadow-sm ring-1 ring-slate-200 overflow-hidden">
-        <CardHeader className="pb-3 border-b border-slate-50">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-base font-semibold">Invoice history</CardTitle>
-              <CardDescription className="text-xs">Records kept for 7 years.</CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-               <div className="relative w-full md:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input 
-                  placeholder="Search by invoice #" 
-                  className="pl-10 h-9 text-xs"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button variant="outline" size="sm" className="h-9 px-3 gap-2 text-slate-600 font-semibold border-slate-200">
-                <Filter className="w-3.5 h-3.5" />
-                Filter
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
+      <Card className="border border-slate-200 shadow-sm rounded-lg bg-white overflow-hidden">
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow>
-                <TableHead className="text-[11px] uppercase tracking-wider font-bold text-slate-500">Invoice #</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-bold text-slate-500">Issue Date</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-bold text-slate-500">Amount</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-bold text-slate-500">Status</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-bold text-slate-500 text-right">Actions</TableHead>
+            <TableHeader className="bg-[#F9FAFB] border-b border-slate-200">
+              <TableRow className="hover:bg-[#F9FAFB]">
+                <TableHead className="text-[12px] font-semibold text-[#6B7280] h-11">Invoice #</TableHead>
+                <TableHead className="text-[12px] font-semibold text-[#6B7280] h-11">Date</TableHead>
+                <TableHead className="text-[12px] font-semibold text-[#6B7280] h-11 w-[300px]">Description</TableHead>
+                <TableHead className="text-[12px] font-semibold text-[#6B7280] h-11">Amount</TableHead>
+                <TableHead className="text-[12px] font-semibold text-[#6B7280] h-11">Status</TableHead>
+                <TableHead className="text-[12px] font-semibold text-[#6B7280] h-11 text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInvoices.map((inv) => (
-                <TableRow key={inv.id} className="hover:bg-slate-50/30 transition-colors">
-                  <TableCell className="font-mono text-sm font-semibold text-brand-primary hover:underline cursor-pointer">
+              {activeProduct.invoices.length > 0 ? (
+                activeProduct.invoices.map((inv) => (
+                <TableRow 
+                  key={inv.id} 
+                  className={cn(
+                    "group transition-colors border-b border-slate-100 last:border-0",
+                    inv.status === 'UPCOMING' ? "bg-blue-50/50 hover:bg-blue-50/80" : "hover:bg-slate-50"
+                  )}
+                >
+                  <TableCell className="text-[14px] text-[#111827] font-medium">
                     {inv.number}
                   </TableCell>
-                  <TableCell className="text-sm text-slate-600">
-                    {format(new Date(inv.issueDate), 'MMM d, yyyy')}
+                  <TableCell className="text-[14px] text-[#6B7280]">
+                    {inv.issueDate}
                   </TableCell>
-                  <TableCell className="text-sm font-semibold text-slate-900">
+                  <TableCell className="text-[14px] text-[#111827]">
+                    {inv.description}
+                  </TableCell>
+                  <TableCell className="text-[14px] text-[#111827] font-medium">
                     ${inv.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </TableCell>
                   <TableCell>
                     <Badge className={cn(
-                      "text-[10px] uppercase font-bold py-0.5 border-none",
-                      inv.status === 'PAID' ? "bg-green-100 text-green-700" : 
-                      inv.status === 'UNPAID' ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
+                      "text-[12px] font-medium py-0.5 px-2.5 rounded-full border-none uppercase tracking-wide",
+                      inv.status === 'PAID' ? "bg-[#DCFCE7] text-[#16A34A] hover:bg-[#DCFCE7]" : 
+                      inv.status === 'UPCOMING' ? "bg-[#DBEAFE] text-[#1D4ED8] hover:bg-[#DBEAFE]" : "bg-slate-100 text-slate-500"
                     )}>
                       {inv.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button 
-                      variant="ghost" 
+                      variant="outline" 
                       size="sm" 
-                      className="text-slate-500 hover:text-brand-primary font-semibold"
-                      onClick={() => toast.success(`Downloading ${inv.number}...`)}
+                      className="h-8 text-[13px] text-slate-700 border-slate-200 hover:bg-slate-50 font-medium"
+                      onClick={handleDownload}
                     >
                       <Download className="w-4 h-4 mr-2" />
-                      PDF
+                      Download PDF
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-48 text-center text-slate-500 text-sm">
+                    No invoices found for this product.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {/* Update Payment Method Modal */}
+      <Dialog open={isPaymentModalOpen} onOpenChange={setIsPaymentModalOpen}>
+        <DialogContent className="max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-[18px] font-bold text-[#111827]">Update Payment Method</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-[14px] text-[#6B7280]">
+              You will be redirected to our secure payment gateway to update your card details. Your card information is never stored by LES Portal.
+            </p>
+          </div>
+          <DialogFooter className="mt-2 flex-col sm:flex-row gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setIsPaymentModalOpen(false)} className="text-[#6B7280] font-medium">Cancel</Button>
+            <Button onClick={() => setIsPaymentModalOpen(false)} className="bg-brand-primary hover:bg-brand-primary/90 text-white font-medium group">
+              Continue to Payment Gateway <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

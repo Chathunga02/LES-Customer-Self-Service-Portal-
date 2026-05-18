@@ -10,24 +10,24 @@
     --font-mono: "JetBrains Mono", monospace;
 
     /* LES Brand Tokens */
-    --color-brand-primary: #1E40AF; /* Indigo 800 */
+    --color-brand-primary: #3B4FE4; /* Indigo/Blue */
     --color-surface-nav: #FFFFFF;
     --color-nav-border: #E2E8F0;
-    --color-surface-page: #F8FAFC;
+    --color-surface-page: #F5F6FA; /* Light Grey Page Background */
     --color-surface-card: #FFFFFF;
 
     --color-background: var(--surface-page);
     --color-foreground: oklch(0.145 0 0);
     
-    --color-primary: #1E40AF;
+    --color-primary: #3B4FE4;
     --color-primary-foreground: #FFFFFF;
     
     --color-card-foreground: oklch(0.145 0 0);
     --color-card: #FFFFFF;
 
-    --color-border: #E2E8F0;
-    --color-input: #E2E8F0;
-    --color-ring: #1E40AF;
+    --color-border: #E5E7EB;
+    --color-input: #E5E7EB;
+    --color-ring: #3B4FE4;
 
     --radius-lg: 12px;
     --radius-md: 8px;
@@ -35,16 +35,16 @@
 }
 
 :root {
-    --surface-page: #F8FAFC;
-    --background: #F8FAFC;
-    --foreground: #0F172A;
+    --surface-page: #F5F6FA;
+    --background: #F5F6FA;
+    --foreground: #111827;
     --card: #FFFFFF;
-    --card-foreground: #0F172A;
-    --primary: #1E40AF;
+    --card-foreground: #111827;
+    --primary: #3B4FE4;
     --primary-foreground: #FFFFFF;
-    --border: #E2E8F0;
-    --input: #E2E8F0;
-    --ring: #1E40AF;
+    --border: #E5E7EB;
+    --input: #E5E7EB;
+    --ring: #3B4FE4;
     --radius: 0.75rem;
 }
 

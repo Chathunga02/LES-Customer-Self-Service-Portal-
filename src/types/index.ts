@@ -47,10 +47,42 @@ export interface Invoice {
 export interface BillingDetails {
   contactName: string;
   contactEmail: string;
+  companyName: string;
+  taxId: string;
+  address: {
+    line1: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
   paymentMethod: {
     type: 'CREDIT_CARD' | 'BANK_TRANSFER';
     last4?: string;
     brand?: string;
     expiry?: string;
   };
+}
+
+export interface Subscription {
+  planTier: string;
+  state: SubscriptionState;
+  validUntil: string;
+  seatsAssigned: number;
+  seatsTotal: number;
+}
+
+export interface Addon {
+  id: string;
+  name: string;
+  status: 'ACTIVE' | 'INACTIVE';
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  subscription: Subscription;
+  seats: Seat[];
+  invoices: Invoice[];
+  addons: Addon[];
 }

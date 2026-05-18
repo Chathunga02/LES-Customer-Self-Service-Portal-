@@ -7,11 +7,13 @@ import Addons from './pages/Addons';
 import Account from './pages/Account';
 import SignIn from './pages/auth/SignIn';
 import { Toaster } from '@/components/ui/sonner';
+import { ProductProvider } from './contexts/ProductContext';
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
+    <ProductProvider>
+      <Router>
+        <Routes>
         {/* Auth Routes */}
         <Route path="/auth/signin" element={<SignIn />} />
 
@@ -33,5 +35,6 @@ export default function App() {
       </Routes>
       <Toaster position="top-right" />
     </Router>
+    </ProductProvider>
   );
 }

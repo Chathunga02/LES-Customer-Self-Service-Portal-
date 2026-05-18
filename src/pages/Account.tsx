@@ -1,132 +1,127 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
-  User, 
-  Lock, 
-  Bell, 
-  ChevronRight,
-  Shield,
-  Eye,
-  EyeOff
+  Building2, 
+  CreditCard, 
+  Mail,
+  MapPin,
+  FileText,
+  Package,
+  ArrowRight
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { toast } from "sonner";
+import { Badge } from '@/components/ui/badge';
+import { MOCK_BILLING } from '@/lib/mockData';
+import { useProduct } from '@/contexts/ProductContext';
 
 const Account = () => {
+  const { activeProduct } = useProduct();
+  const b = MOCK_BILLING;
+
   return (
-    <div className="max-w-[640px] mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Account settings</h1>
-        <p className="text-slate-500 text-sm mt-1">Manage your personal profile and security preferences.</p>
+        <h1 className="text-[22px] font-bold text-[#111827]">Account Settings</h1>
+        <p className="text-[#6B7280] text-[14px] mt-1">Manage your organization details and view active add-ons.</p>
       </div>
 
-      {/* Profile Card */}
-      <Card className="border-none shadow-sm ring-1 ring-slate-200">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div>
-            <CardTitle className="text-base font-bold">Profile</CardTitle>
-            <CardDescription className="text-xs">Your personal information.</CardDescription>
-          </div>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold">Edit</Button>
-        </CardHeader>
-        <CardContent className="space-y-6 pt-4">
-          <div className="grid grid-cols-1 gap-4">
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Full name</label>
-              <p className="text-sm font-medium text-slate-900">Sarah Jenkins</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Organization Details */}
+        <Card className="bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col h-full">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Building2 className="w-5 h-5 text-brand-primary" />
+              <CardTitle className="text-[18px] font-bold text-[#111827]">Organization Details</CardTitle>
             </div>
-            <Separator className="bg-slate-50" />
+            <CardDescription className="text-[14px] text-[#6B7280]">
+              The legal entity associated with this account. (Read-only)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5 flex-1">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Email address</label>
-              <p className="text-sm font-medium text-slate-900">s.jenkins@acme.com</p>
-              <p className="text-[11px] text-slate-400 italic mt-1">Changing your email will require verification before taking effect.</p>
+              <label className="text-[12px] font-semibold text-[#6B7280] uppercase tracking-wider flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5"/> Company Name</label>
+              <p className="text-[15px] font-medium text-[#111827]">{b.companyName}</p>
             </div>
-            <Separator className="bg-slate-50" />
+            <Separator className="bg-slate-100" />
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Organisation</label>
-              <p className="text-sm font-medium text-slate-600 italic">Acme Industries Ltd (Read-only)</p>
+              <label className="text-[12px] font-semibold text-[#6B7280] uppercase tracking-wider flex items-center gap-1.5"><FileText className="w-3.5 h-3.5"/> Tax ID / VAT Number</label>
+              <p className="text-[15px] font-medium text-[#111827]">{b.taxId}</p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+            <Separator className="bg-slate-100" />
+            <div className="space-y-1">
+              <label className="text-[12px] font-semibold text-[#6B7280] uppercase tracking-wider flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5"/> Billing Address</label>
+              <p className="text-[15px] font-medium text-[#111827]">
+                {b.address.line1}<br/>
+                {b.address.city}, {b.address.state} {b.address.postalCode}<br/>
+                {b.address.country}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Password Card */}
-      <Card className="border-none shadow-sm ring-1 ring-slate-200">
-        <CardHeader>
-          <CardTitle className="text-base font-bold">Password</CardTitle>
-          <CardDescription className="text-xs">Update your security credentials.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 pt-4">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700">Current password</label>
-            <div className="relative">
-               <Input type="password" placeholder="••••••••" className="h-10" />
-               <Button variant="ghost" size="icon" className="absolute right-0 top-0 h-10 w-10 text-slate-400">
-                 <EyeOff className="w-4 h-4" />
-               </Button>
+        {/* Billing Contact */}
+        <Card className="bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col h-full">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Mail className="w-5 h-5 text-brand-primary" />
+              <CardTitle className="text-[18px] font-bold text-[#111827]">Billing Contact</CardTitle>
             </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700">New password</label>
-            <Input type="password" placeholder="Min. 8 characters" className="h-10" />
-            {/* Password strength placeholder */}
-            <div className="flex gap-1 h-1.5 mt-2">
-              <div className="flex-1 bg-slate-100 rounded-full" />
-              <div className="flex-1 bg-slate-100 rounded-full" />
-              <div className="flex-1 bg-slate-100 rounded-full" />
-              <div className="flex-1 bg-slate-100 rounded-full" />
+            <CardDescription className="text-[14px] text-[#6B7280]">
+              Who receives invoices and billing-related emails.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5 flex-1">
+            <div className="space-y-1">
+              <label className="text-[12px] font-semibold text-[#6B7280] uppercase tracking-wider flex items-center gap-1.5">Contact Name</label>
+              <p className="text-[15px] font-medium text-[#111827]">{b.contactName}</p>
             </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700">Confirm new password</label>
-            <Input type="password" placeholder="••••••••" className="h-10" />
-          </div>
-        </CardContent>
-        <CardFooter className="pt-2">
-          <Button className="bg-brand-primary font-bold px-6">Update password</Button>
-        </CardFooter>
-      </Card>
+            <Separator className="bg-slate-100" />
+            <div className="space-y-1">
+              <label className="text-[12px] font-semibold text-[#6B7280] uppercase tracking-wider flex items-center gap-1.5">Email Address</label>
+              <p className="text-[15px] font-medium text-[#111827]">{b.contactEmail}</p>
+            </div>
+            <div className="pt-4 mt-auto">
+              <Button disabled variant="outline" className="w-full text-slate-500 border-slate-200 font-medium opacity-60">
+                Contact Support to Edit
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Notifications Card */}
-      <Card className="border-none shadow-sm ring-1 ring-slate-200">
+      {/* Add-ons Awareness */}
+      <Card className="bg-white border border-slate-200 shadow-sm rounded-lg mt-8">
         <CardHeader>
-          <CardTitle className="text-base font-bold">Email notifications</CardTitle>
-          <CardDescription className="text-xs">Choose which updates you want to receive.</CardDescription>
+          <div className="flex items-center gap-2 mb-1">
+            <Package className="w-5 h-5 text-brand-primary" />
+            <CardTitle className="text-[18px] font-bold text-[#111827]">Active Add-ons for {activeProduct.name}</CardTitle>
+          </div>
+          <CardDescription className="text-[14px] text-[#6B7280]">
+            Review your current capability extensions and purchase more.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-0 pt-2">
-          <div className="space-y-0">
-             {[
-               { id: 'n1', label: 'Renewal reminders (T-30, T-15, T-7, T-1)', toggleable: true, default: true },
-               { id: 'n2', label: 'Payment receipt', toggleable: false, default: true },
-               { id: 'n3', label: 'Payment failed', toggleable: false, default: true },
-               { id: 'n4', label: 'Subscription entering grace period', toggleable: false, default: true },
-               { id: 'n5', label: 'Subscription expired', toggleable: false, default: true },
-               { id: 'n6', label: 'Seat assigned', toggleable: false, default: true },
-               { id: 'n7', label: 'License key rotated', toggleable: true, default: true },
-             ].map((pref) => (
-               <div key={pref.id} className="flex items-center justify-between py-4 border-b border-slate-50 last:border-0">
-                 <div className="flex items-center gap-3">
-                   <p className={cn("text-xs font-medium", pref.toggleable ? "text-slate-700" : "text-slate-400")}>
-                     {pref.label}
-                   </p>
-                   {!pref.toggleable && (
-                      <span className="text-[9px] font-bold text-slate-400 border border-slate-200 rounded px-1.5 py-0.5">MANDATORY</span>
-                   )}
-                 </div>
-                 <Switch 
-                   defaultChecked={pref.default} 
-                   disabled={!pref.toggleable} 
-                  />
-               </div>
-             ))}
+        <CardContent>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-3">
+              {activeProduct.addons.length > 0 ? (
+                activeProduct.addons.map(addon => (
+                  <Badge key={addon.id} className="bg-[#DCFCE7] text-[#16A34A] hover:bg-[#DCFCE7] border-none px-3 py-1 text-[13px] font-medium rounded-full uppercase tracking-wide">
+                    {addon.name}
+                  </Badge>
+                ))
+              ) : (
+                <p className="text-[14px] text-[#6B7280]">No add-ons currently active.</p>
+              )}
+            </div>
+            <Button asChild variant="outline" className="text-brand-primary border-brand-primary/20 hover:bg-brand-primary/5 font-medium whitespace-nowrap">
+              <Link to="/portal/addons">
+                Manage Add-ons <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+            </Button>
           </div>
         </CardContent>
-        <CardFooter className="pt-4 border-t border-slate-50">
-          <Button className="bg-brand-primary w-full font-bold">Save preferences</Button>
-        </CardFooter>
       </Card>
     </div>
   );
